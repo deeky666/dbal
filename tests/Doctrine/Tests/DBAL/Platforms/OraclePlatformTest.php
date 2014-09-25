@@ -535,4 +535,19 @@ class OraclePlatformTest extends AbstractPlatformTestCase
             ),
         );
     }
+
+    public function testQuotedTableNames()
+    {
+        $table = new Table('"test"');
+        $table->addColumn('"id"', 'integer', array('autoincrement' => true));
+
+        // assert tabel
+        $this->assertTrue($table->isQuoted());
+        $this->assertEquals('test', $table->getName());
+        $this->assertEquals('"test"', $table->getQuotedName($this->_platform));
+
+        $sql = $this->_platform->getCreateTableSQL($table);
+        $this->assertEquals('CREATE SEQUENCE "test_SEQ" START WITH 1 MINVALUE 1 INCREMENT BY 1', $sql[2]);
+    }
+
 }
