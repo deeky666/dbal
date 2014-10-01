@@ -494,7 +494,10 @@ BEGIN
   END IF;
 END;';
 
-        $sequenceName = $this->getIdentitySequenceName($unquotedTableName, $unquotedName);
+        $sequenceName = $this->getIdentitySequenceName(
+            $tableIdentifier->isQuoted() ? $quotedTableName : $unquotedTableName,
+            $nameIdentifier->isQuoted() ? $quotedName : $unquotedName
+        );
         $sequence = new Sequence($sequenceName, $start);
         $sql[] = $this->getCreateSequenceSQL($sequence);
 
