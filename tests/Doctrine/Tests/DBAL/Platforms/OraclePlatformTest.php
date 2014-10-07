@@ -3,8 +3,13 @@
 namespace Doctrine\Tests\DBAL\Platforms;
 
 use Doctrine\DBAL\Platforms\OraclePlatform;
+use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Schema\ColumnDiff;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\TableDiff;
+use Doctrine\DBAL\Types\StringType;
+use Doctrine\DBAL\Types\Type;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -574,6 +579,20 @@ END;
 EOD;
 
         $this->assertEquals($createTriggerStatement, $sql[3]);
+    }
+
+    public function testColumnModify()
+    {
+        $fromColumn = new Column('description', Type::getType(Type::STRING), array('length' => 255));
+        $toColumn = new Column('description', Type::getType(Type::STRING), array('length' => 1024));
+        $columnDiff = new ColumnDiff('description', $toColumn, array('length'), $fromColumn);
+        $changedColumns = array(
+            $columnDiff
+        );
+        $tableDiff = new TableDiff('"test"', array(), $changedColumns);
+        $sql = $this->_platform->getAlterTableSQL($tableDiff);
+
+        $this->assertEquals('ALTER TABLE "test" MODIFY (description VARCHAR2(1024) DEFAULT NULL)', $sql[0]);
     }
 
 }
