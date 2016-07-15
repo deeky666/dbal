@@ -40,9 +40,13 @@ abstract class Type
     const BIGINT = 'bigint';
     const BOOLEAN = 'boolean';
     const DATETIME = 'datetime';
+    const DATETIME_IMMUTABLE = 'datetime_immutable';
     const DATETIMETZ = 'datetimetz';
+    const DATETIMETZ_IMMUTABLE = 'datetimetz_immutable';
     const DATE = 'date';
+    const DATE_IMMUTABLE = 'date_immutable';
     const TIME = 'time';
+    const TIME_IMMUTABLE = 'time_immutable';
     const DECIMAL = 'decimal';
     const INTEGER = 'integer';
     const OBJECT = 'object';
@@ -80,9 +84,13 @@ abstract class Type
         self::STRING => 'Doctrine\DBAL\Types\StringType',
         self::TEXT => 'Doctrine\DBAL\Types\TextType',
         self::DATETIME => 'Doctrine\DBAL\Types\DateTimeType',
+        self::DATETIME_IMMUTABLE => 'Doctrine\DBAL\Types\DateTimeImmutableType',
         self::DATETIMETZ => 'Doctrine\DBAL\Types\DateTimeTzType',
+        self::DATETIMETZ_IMMUTABLE => 'Doctrine\DBAL\Types\DateTimeTzImmutableType',
         self::DATE => 'Doctrine\DBAL\Types\DateType',
+        self::DATE_IMMUTABLE => 'Doctrine\DBAL\Types\DateImmutableType',
         self::TIME => 'Doctrine\DBAL\Types\TimeType',
+        self::TIME_IMMUTABLE => 'Doctrine\DBAL\Types\TimeImmutableType',
         self::DECIMAL => 'Doctrine\DBAL\Types\DecimalType',
         self::FLOAT => 'Doctrine\DBAL\Types\FloatType',
         self::BINARY => 'Doctrine\DBAL\Types\BinaryType',
