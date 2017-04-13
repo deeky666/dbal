@@ -5,6 +5,9 @@ namespace Doctrine\Tests\DBAL\Types;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\TimeImmutableType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\ConversionException;
+
+use DateTimeImmutable;
 
 class TimeImmutableTypeTest extends \PHPUnit_Framework_TestCase
 {
@@ -41,7 +44,7 @@ class TimeImmutableTypeTest extends \PHPUnit_Framework_TestCase
 
     public function testConvertsDateTimeImmutableInstanceToDatabaseValue()
     {
-        $date = $this->prophesize(\DateTimeImmutable::class);
+        $date = $this->prophesize(DateTimeImmutable::class);
 
         $this->platform->getTimeFormatString()->willReturn('H:i:s')->shouldBeCalled();
         $date->format('H:i:s')->willReturn('15:58:59')->shouldBeCalled();
@@ -57,17 +60,16 @@ class TimeImmutableTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->type->convertToDatabaseValue(null, $this->platform->reveal()));
     }
 
-    /**
-     * @expectedException \Doctrine\DBAL\Types\ConversionException
-     */
     public function testDoesNotSupportMutableDateTimeToDatabaseValueConversion()
     {
+        $this->expectException(ConversionException::class);
+
         $this->type->convertToDatabaseValue(new \DateTime(), $this->platform->reveal());
     }
 
     public function testConvertsDateTimeImmutableInstanceToPHPValue()
     {
-        $date = new \DateTimeImmutable();
+        $date = new DateTimeImmutable();
 
         $this->assertSame($date, $this->type->convertToPHPValue($date, $this->platform->reveal()));
     }
@@ -83,7 +85,7 @@ class TimeImmutableTypeTest extends \PHPUnit_Framework_TestCase
 
         $date = $this->type->convertToPHPValue('15:58:59', $this->platform->reveal());
 
-        $this->assertInstanceOf(\DateTimeImmutable::class, $date);
+        $this->assertInstanceOf(DateTimeImmutable::class, $date);
         $this->assertSame('15:58:59', $date->format('H:i:s'));
     }
 
@@ -96,11 +98,10 @@ class TimeImmutableTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('1970-01-01 15:58:59', $date->format('Y-m-d H:i:s'));
     }
 
-    /**
-     * @expectedException \Doctrine\DBAL\Types\ConversionException
-     */
     public function testThrowsExceptionDuringConversionToPHPValueWithInvalidTimeString()
     {
+        $this->expectException(ConversionException::class);
+
         $this->type->convertToPHPValue('invalid time string', $this->platform->reveal());
     }
 
