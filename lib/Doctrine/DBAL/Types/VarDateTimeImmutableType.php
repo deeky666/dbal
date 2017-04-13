@@ -20,6 +20,7 @@
 namespace Doctrine\DBAL\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use DateTimeImmutable;
 
 /**
  * Immutable type of {@see VarDateTimeType}.
@@ -36,7 +37,7 @@ class VarDateTimeImmutableType extends VarDateTimeType
     {
         return Type::DATETIME_IMMUTABLE;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -46,11 +47,15 @@ class VarDateTimeImmutableType extends VarDateTimeType
             return $value;
         }
 
-        if ($value instanceof \DateTimeImmutable) {
+        if ($value instanceof DateTimeImmutable) {
             return $value->format($platform->getDateTimeFormatString());
         }
 
-        throw ConversionException::conversionFailedInvalidType($value, $this->getName(), ['null', 'DateTimeImmutable']);
+        throw ConversionException::conversionFailedInvalidType(
+            $value,
+            $this->getName(),
+            ['null', DateTimeImmutable::class]
+        );
     }
 
     /**
@@ -58,17 +63,17 @@ class VarDateTimeImmutableType extends VarDateTimeType
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        if ($value === null || $value instanceof \DateTimeImmutable) {
+        if ($value === null || $value instanceof DateTimeImmutable) {
             return $value;
         }
 
-        $val = date_create_immutable($value);
+        $phpValue = date_create_immutable($value);
 
-        if (! $val) {
+        if (! $phpValue) {
             throw ConversionException::conversionFailed($value, $this->getName());
         }
 
-        return $val;
+        return $phpValue;
     }
 
     /**

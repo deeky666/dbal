@@ -5,6 +5,9 @@ namespace Doctrine\Tests\DBAL\Types;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\VarDateTimeImmutableType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\ConversionException;
+
+use DateTimeImmutable;
 
 class VarDateTimeImmutableTypeTest extends \PHPUnit_Framework_TestCase
 {
@@ -40,7 +43,7 @@ class VarDateTimeImmutableTypeTest extends \PHPUnit_Framework_TestCase
 
     public function testConvertsDateTimeImmutableInstanceToDatabaseValue()
     {
-        $date = $this->prophesize(\DateTimeImmutable::class);
+        $date = $this->prophesize(DateTimeImmutable::class);
 
         $this->platform->getDateTimeFormatString()->willReturn('Y-m-d H:i:s')->shouldBeCalled();
         $date->format('Y-m-d H:i:s')->willReturn('2016-01-01 15:58:59')->shouldBeCalled();
@@ -56,17 +59,16 @@ class VarDateTimeImmutableTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->type->convertToDatabaseValue(null, $this->platform->reveal()));
     }
 
-    /**
-     * @expectedException \Doctrine\DBAL\Types\ConversionException
-     */
     public function testDoesNotSupportMutableDateTimeToDatabaseValueConversion()
     {
+        $this->expectException(ConversionException::class);
+
         $this->type->convertToDatabaseValue(new \DateTime(), $this->platform->reveal());
     }
 
     public function testConvertsDateTimeImmutableInstanceToPHPValue()
     {
-        $date = new \DateTimeImmutable();
+        $date = new DateTimeImmutable();
 
         $this->assertSame($date, $this->type->convertToPHPValue($date, $this->platform->reveal()));
     }
@@ -82,15 +84,14 @@ class VarDateTimeImmutableTypeTest extends \PHPUnit_Framework_TestCase
 
         $date = $this->type->convertToPHPValue('2016-01-01 15:58:59.123456 UTC', $this->platform->reveal());
 
-        $this->assertInstanceOf(\DateTimeImmutable::class, $date);
+        $this->assertInstanceOf(DateTimeImmutable::class, $date);
         $this->assertSame('2016-01-01 15:58:59.123456 UTC', $date->format('Y-m-d H:i:s.u T'));
     }
 
-    /**
-     * @expectedException \Doctrine\DBAL\Types\ConversionException
-     */
     public function testThrowsExceptionDuringConversionToPHPValueWithInvalidDateishString()
     {
+        $this->expectException(ConversionException::class);
+
         $this->type->convertToPHPValue('invalid date-ish string', $this->platform->reveal());
     }
 
